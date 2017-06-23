@@ -1,0 +1,31 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]; then
+  echo "Usage: $0 <MFA_TOKEN_CODE> [ACCOUNT_NAME]"
+  echo "Where:"
+  echo "   <MFA_TOKEN_CODE> = Code from virtual MFA device"
+  echo "   [ACCOUNT_NAME] = Optional, defaults to the first project defined"
+  exit 2
+fi
+
+MFA_TOKEN_CODE=$1
+ACCOUNT_NAME=${2:-<acc1>}
+if [ "$ACCOUNT_NAME" == "<acc1>" ]
+then
+  ARN_OF_MFA="<acc1-mfa-arn>"
+elif [ "$ACCOUNT_NAME" == "<acc2>" ]
+then
+  ARN_OF_MFA="<acc2-mfa-arn>"
+else
+  >&2 echo "Unknown account name $ACCOUNT_NAME"
+  exit 2
+fi
+
+cat ~/.aws/$ACCOUNT_NAME > ~/.aws/credentials
+
+creds=`aws sts get-session-token \
+ --duration 86400 \
+ --serial-number $ARN_OF_MFA \
+ --token-code $MFA_TOKEN_CODE \
+ --output text`
+echo $creds | awk '{printf("[default]\naws_access_key_id = %s\naws_secret_access_key=%s\naws_session_token=%s\n",$2,$4,$5)}' > ~/.aws/credentials
