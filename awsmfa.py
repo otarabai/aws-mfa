@@ -20,7 +20,7 @@ def main():
     config = get_config()
     if not config or args.configure:
         config = create_or_update_config(config=config)
-    account = args.account or pick_account(args, config)
+    account = args.account or pick_account(config)
     credentials = get_credentials(config, account, mfa_code=args.mfa_code)
     write_credentials(config, *credentials)
 
@@ -78,7 +78,7 @@ def restrict_file_mode(file_path, mode=0600):
     os.chmod(file_path, mode)
 
 
-def pick_account(args, config):
+def pick_account(config):
     """
     Prompt the user to choose an AWS account if more than one is configured.
     """
