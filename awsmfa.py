@@ -40,6 +40,7 @@ def get_args():
 def get_config():
     if not os.path.exists(CONFIG_PATH):
         return None
+    restrict_file_mode(CONFIG_PATH)
     config = ConfigParser.RawConfigParser()
     config.read(CONFIG_PATH)
     if not config.sections():
@@ -65,10 +66,16 @@ def create_or_update_config(config=None):
             break
     with open(CONFIG_PATH, 'wb') as config_file:
         config.write(config_file)
+    restrict_file_mode(CONFIG_PATH)
     print ("\nConfiguration has been saved to `%s`, you can update it directly"
            " or run `python %s --configure` to add new AWS accounts"
            % (CONFIG_PATH, os.path.basename(__file__)))
     return config
+
+
+def restrict_file_mode(file_path, mode=0600):
+    """ Make sure the given file readble/writable by the owner only. """
+    os.chmod(file_path, mode)
 
 
 def pick_account(args, config):
