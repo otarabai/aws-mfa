@@ -23,3 +23,8 @@ To authenticate, simply run `awsmfa` and follow the instructions.
 For non-interactive authentication, use
 `awsmfa -a <account-name> <mfa-code>` or just `awsmfa <mfa-code>` if you have
 only one AWS account configured.
+
+## TODO
+
+- [ ] Support py3
+- [ ] Support switching between already authenticated accounts
